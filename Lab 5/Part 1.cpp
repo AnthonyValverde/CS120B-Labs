@@ -3,7 +3,6 @@
 
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
 unsigned char lightup = 0x00;
-unsigned char button = 0x00;
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
@@ -54,48 +53,10 @@ ISR(TIMER1_COMPA_vect) {
 
 // Set TimerISR() to tick every M ms
 void TimerSet(unsigned long M) {
-	_avr_timer_M = 30;
+	_avr_timer_M = 100;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum SM_STATES {SM_FIRST, SM_SECOND, SM_THIRD}SM_STATE;
-void SM_TICK()
-{
-	switch(SM_STATE)
-	{	
-		case SM_PAUSE:
-		if (button == 0x01)
-		{
-			count = 0x01;
-			SM_STATE  = SM_PAUSE;
-		}
-		
-		break;
-		case SM_PAUSE:
-		if (button == 0x01)
-		{
-			
-		}
-		
-		case SM_FIRST:
-		lightup =0x10;
-		PORTC = lightup;
-		SM_STATE = SM_SECOND;
-		break;
-		
-		case SM_SECOND:
-		lightup = 0x04;
-		PORTC = lightup;
-		SM_STATE = SM_THIRD;
-		break;
-		
-		case SM_THIRD:
-		lightup = 0x01;
-		PORTC = lightup;
-		SM_STATE = SM_FIRST;
-		break;
-	}
-}
 
 int main(void)
 {
