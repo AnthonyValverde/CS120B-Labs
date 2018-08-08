@@ -58,41 +58,69 @@ void TimerSet(unsigned long M) {
 	_avr_timer_cntcurr = _avr_timer_M;
 }
 
-enum SM_STATES {SM_FIRST, SM_SECOND, SM_THIRD}SM_STATE;
+enum SM_STATES {SM_FIRST, SM_SECOND, SM_THIRD, SM_PAUSE}SM_STATE,SM_STATE_SAVE;
 void SM_TICK()
 {
 	switch(SM_STATE)
 	{	
 		case SM_PAUSE:
-		if (button == 0x01)
+		while (count !=0)
 		{
-			count = 0x01;
-			SM_STATE  = SM_PAUSE;
+		if (button == 0x01) 
+		{
+		count = 0;
+		SM_STATE = SM_STATE_SAVE;
+		}
+		else 
+		{
+		SM_STATE = SM_PAUSE;
 		}
 		
 		break;
-		case SM_PAUSE:
-		if (button == 0x01)
-		{
-			
-		}
 		
 		case SM_FIRST:
 		lightup =0x10;
 		PORTC = lightup;
+		if (button == 0x01)
+		{
+		SM_STATE_SAVE = SM_STATE;
+		count = 1;
+		SM_STATE  = SM_PAUSE;
+		}
+		else 
+		{
 		SM_STATE = SM_SECOND;
+		}
 		break;
 		
 		case SM_SECOND:
 		lightup = 0x04;
 		PORTC = lightup;
+		if (button == 0x01)
+		{
+		SM_STATE_SAVE = SM_STATE;
+		count = 1;
+		SM_STATE  = SM_PAUSE;
+		}
+		else 
+		{
 		SM_STATE = SM_THIRD;
+		}
 		break;
 		
 		case SM_THIRD:
 		lightup = 0x01;
 		PORTC = lightup;
+		if (button == 0x01)
+		{
+		SM_STATE_SAVE = SM_STATE;
+		count = 1;
+		SM_STATE  = SM_PAUSE
+		}
+		else 
+		{
 		SM_STATE = SM_FIRST;
+		}
 		break;
 	}
 }
