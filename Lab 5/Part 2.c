@@ -75,7 +75,7 @@ void SM_TICK()
 		{
 		SM_STATE = SM_PAUSE;
 		}
-		
+		}
 		break;
 		
 		case SM_FIRST:
@@ -127,11 +127,10 @@ void SM_TICK()
 
 int main(void)
 {
-	DDRB = 0xFF; // Set port B to output
-	PORTC = 0x00; // Init port B to 0s
+	DDRA = 0x00; PORTA = 0xFF; // Set port B to output
+	DDRC = 0xFF; PORTC = 0x00; // Init port B to 0s
 	TimerSet(1000);
 	TimerOn();
-	unsigned char tmpB = 0x00;
 	//init 
 	lightup = 0x10;
 	PORTC = lightup;
@@ -139,7 +138,6 @@ int main(void)
 	while(1) {
 		// User code (i.e. synchSM calls)
 	// Toggle PORTB; Temporary, bad programming style
-		PORTC = lightup;
 		while (!TimerFlag);	// Wait 1 sec
 		TimerFlag = 0;
 		// Note: For the above a better style would use a synchSM with TickSM()
