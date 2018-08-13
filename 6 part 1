@@ -2,7 +2,7 @@
 #include <avr/interrupt.h>
 #include "io.c"
 
-enum SM_STATES {SM_DETECT, SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE;
+enum SM_STATES {SM_DETECT, SM_INCREMENT, SM_DECREMENT, SM_ZERO, SM_NOPRESS} SM_STATE;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
 
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
@@ -68,7 +68,7 @@ void SM_TICK()
 		case SM_DETECT:
 		if (buttons == 0x00)
 		{
-			SM_STATE = SM_DETECT;
+			SM_STATE = SM_NOPRESS;
 		}
 		else if (buttons == 0x01)
 		{
@@ -91,7 +91,7 @@ void SM_TICK()
 		case SM_INCREMENT:
 		if (lightup < 9)
 		{
-			lightup = lightup + 1;
+		lightup = lightup + 1;
 		}
 		SM_STATE = SM_DETECT;
 		break;
@@ -99,7 +99,7 @@ void SM_TICK()
 		case SM_DECREMENT:
 		if (lightup > 0)
 		{
-			lightup = lightup - 1;
+		lightup = lightup - 1;
 		}
 		SM_STATE = SM_DETECT;
 		break;
@@ -108,24 +108,29 @@ void SM_TICK()
 		lightup = 0;
 		SM_STATE = SM_DETECT;
 		break;
+		
+		case SM_NOPRESS:
+		SM_STATE = SM_DETECT;
+		break;
 	}
 }
-int main(void)
+void main()
 {	DDRC = 0xFF; PORTC = 0x00;
 	DDRA = 0x00; PORTA = 0xFF;
 	DDRD = 0xFF; PORTD = 0x00;
-	LCD_init();
-	SM_STATE = SM_DETECT;
-	lightup = '7';
 	TimerSet(1000);
 	TimerOn();
+	LCD_init();
+	LCD_ClearScreen();
+	SM_STATE = SM_DETECT;
+	
 	while(1) {
-		while (!TimerFlag);
-		TimerFlag = 0;
 		buttons = PINA & 0x03;
 		SM_TICK();
 		LCD_Cursor(1);
 		LCD_WriteData(lightup + '0');
+		while (!TimerFlag);
+		TimerFlag = 0;
 
 	}
 }
