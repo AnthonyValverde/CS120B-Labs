@@ -8,7 +8,7 @@ volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
-unsigned char lightup = 0x00;
+unsigned short lightup = 0;
 unsigned char buttons = 0x00;
 
 void TimerOn() {
@@ -110,27 +110,22 @@ void SM_TICK()
 		break;
 	}
 }
-void main(int)
-{ DDRC = 0xFF; PORTC = 0x00;
+int main(void)
+{	DDRC = 0xFF; PORTC = 0x00;
 	DDRA = 0x00; PORTA = 0xFF;
-	DDRB = 0xFF; PORTB = 0x00;
-	
+	DDRD = 0xFF; PORTD = 0x00;
 	LCD_init();
 	SM_STATE = SM_DETECT;
-	lightup = 0x07;
-	PORTB = lightup;
-	
+	lightup = '7';
 	TimerSet(1000);
 	TimerOn();
 	while(1) {
+		while (!TimerFlag);
+		TimerFlag = 0;
 		buttons = PINA & 0x03;
 		SM_TICK();
-		LCD_DisplayString(2, " 0xFACEBOOC");
 		LCD_Cursor(1);
-		LCD_WriteData(lightup + '0')
-		while (!TimerFlag);	// Wait 1 sec
-		TimerFlag = 0;
-		return 0;#include "io.c"
+		LCD_WriteData(lightup + '0');
 
 	}
 }
