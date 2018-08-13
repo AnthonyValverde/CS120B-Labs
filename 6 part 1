@@ -66,6 +66,7 @@ void SM_TICK()
 	switch(SM_STATE)
 	{
 		case SM_DETECT:
+		buttons = PINA & 0x03;
 		if (buttons == 0x00)
 		{
 			SM_STATE = SM_NOPRESS;
