@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "io.c"
 
 enum SM_STATES {SM_DETECT, SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
@@ -7,22 +8,22 @@ volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
-unsigned char lightup = x0x00;
-unsigned chart buttons = 0x00;
+unsigned char lightup = 0x00;
+unsigned char buttons = 0x00;
 
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
 	TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
-			// bit2bit1bit0=011: pre-scaler /64
-			// 00001011: 0x0B
-			// SO, 8 MHz clock or 8,000,000 /64 = 125,000 ticks/s
-			// Thus, TCNT1 register will count at 125,000 ticks/s
+	// bit2bit1bit0=011: pre-scaler /64
+	// 00001011: 0x0B
+	// SO, 8 MHz clock or 8,000,000 /64 = 125,000 ticks/s
+	// Thus, TCNT1 register will count at 125,000 ticks/s
 
 	// AVR output compare register OCR1A.
 	OCR1A = 125;	// Timer interrupt will be generated when TCNT1==OCR1A
-			// We want a 1 ms tick. 0.001 s * 125,000 ticks/s = 125
-			// So when TCNT1 register equals 125,
-			// 1 ms has passed. Thus, we compare to 125.
+	// We want a 1 ms tick. 0.001 s * 125,000 ticks/s = 125
+	// So when TCNT1 register equals 125,
+	// 1 ms has passed. Thus, we compare to 125.
 	// AVR timer interrupt mask register
 	TIMSK1 = 0x02; // bit1: OCIE1A -- enables compare match interrupt
 
@@ -33,7 +34,7 @@ void TimerOn() {
 	// TimerISR will be called every _avr_timer_cntcurr milliseconds
 
 	//Enable global interrupts
-SREG |= 0x80; // 0x80: 1000000
+	SREG |= 0x80; // 0x80: 1000000
 }
 
 void TimerOff() {
@@ -60,76 +61,76 @@ void TimerSet(unsigned long M) {
 	_avr_timer_M = 100;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
-void SM_TICK() 
+void SM_TICK()
 {
-  switch(SM_STATE) 
-  {
-    case SM_DETECT:
-    if (buttons == 0x00)
-    { 
-    SM_STATE = SM_DETECT;
-    }
-    else if (buttons == 0x01)
-    {
-    SM_STATE = SM_INCREMENT;
-    }
-    else if (buttons == 0x02)
-    {
-    SM_STATE = SM_DECREMENT;
-    }
-    else if (buttons  == 0x03)
-    {
-    SM_STATE = SM_ZERO;
-    }
-    else 
-    { 
-    SM_STATE = SM_DETECT;
-    }
-    break;
-    
-    case SM_INCREMENT:
-    if (lightup < 9)
-    {
-    lightup = lightup + 1;
-    }
-    SM_STATE = SM_DETECT; 
-    break;
-    
-    case SM_DECREMENT:
-     if (lightup > 0)
-     {
-    lightup = lightup - 1
-    }
-    SM_STATE = SM_DETECT;
-    break;
-    
-    case ZERO:
-    lightup = 0;
-    SM_STATE = SM_DETECT;
-    break;
-  }
+	switch(SM_STATE)
+	{
+		case SM_DETECT:
+		if (buttons == 0x00)
+		{
+			SM_STATE = SM_DETECT;
+		}
+		else if (buttons == 0x01)
+		{
+			SM_STATE = SM_INCREMENT;
+		}
+		else if (buttons == 0x02)
+		{
+			SM_STATE = SM_DECREMENT;
+		}
+		else if (buttons  == 0x03)
+		{
+			SM_STATE = SM_ZERO;
+		}
+		else
+		{
+			SM_STATE = SM_DETECT;
+		}
+		break;
+		
+		case SM_INCREMENT:
+		if (lightup < 9)
+		{
+			lightup = lightup + 1;
+		}
+		SM_STATE = SM_DETECT;
+		break;
+		
+		case SM_DECREMENT:
+		if (lightup > 0)
+		{
+			lightup = lightup - 1;
+		}
+		SM_STATE = SM_DETECT;
+		break;
+		
+		case SM_ZERO:
+		lightup = 0;
+		SM_STATE = SM_DETECT;
+		break;
+	}
 }
-void main()
+void main(int)
 { DDRC = 0xFF; PORTC = 0x00;
-  DDRA = 0x00; PORTA = 0xFF;
-	DDRB = 0xFF; PORTB = 0x00; 
-  
-  LCD_init();
-  SM_STATE = SM_DETECT;
-  lightup = 0x07;
-  PORTB = lightup;
-  
-  TimerSet(1000);
+	DDRA = 0x00; PORTA = 0xFF;
+	DDRB = 0xFF; PORTB = 0x00;
+	
+	LCD_init();
+	SM_STATE = SM_DETECT;
+	lightup = 0x07;
+	PORTB = lightup;
+	
+	TimerSet(1000);
 	TimerOn();
 	while(1) {
-    buttons = PINA & 0x03;
-		SM_Tick();
+		buttons = PINA & 0x03;
+		SM_TICK();
 		LCD_DisplayString(2, " 0xFACEBOOC");
 		LCD_Cursor(1);
-    LCD_WriteData(lightup + '0')
+		LCD_WriteData(lightup + '0')
 		while (!TimerFlag);	// Wait 1 sec
 		TimerFlag = 0;
+		return 0;#include "io.c"
 
 	}
 }
-
