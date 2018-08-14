@@ -58,7 +58,7 @@ ISR(TIMER1_COMPA_vect) {
 
 // Set TimerISR() to tick every M ms
 void TimerSet(unsigned long M) {
-	_avr_timer_M = 100;
+	_avr_timer_M = M;
 	_avr_timer_cntcurr = _avr_timer_M;
 }
 void SM_TICK()
@@ -116,17 +116,15 @@ void SM_TICK()
 	}
 }
 void main()
-{	DDRC = 0xFF; PORTC = 0x00;
-	DDRA = 0x00; PORTA = 0xFF;
+{	DDRA = 0x00; PORTA = 0xFF;
+	DDRC = 0xFF; PORTC = 0x00;
 	DDRD = 0xFF; PORTD = 0x00;
 	TimerSet(1000);
 	TimerOn();
 	LCD_init();
-	LCD_ClearScreen();
 	SM_STATE = SM_DETECT;
 	
 	while(1) {
-		buttons = ~PINA & 0x03;
 		SM_TICK();
 		LCD_Cursor(1);
 		LCD_WriteData(lightup + '0');
