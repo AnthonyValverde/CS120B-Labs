@@ -2,14 +2,16 @@
 #include <avr/interrupt.h>
 #include "io.c"
 
-enum SM_STATES {SM_DETECT, SM_INCREMENT, SM_DECREMENT, SM_ZERO, SM_NOPRESS} SM_STATE;
+enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
 
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
 unsigned short lightup = 0;
-unsigned char buttons = 0x00;
+unsigned char button1 = 0x00;
+unsigned char button2 = 0x00;
+unsigned short cnt = 0;
 
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
@@ -65,53 +67,93 @@ void SM_TICK()
 {
 	switch(SM_STATE)
 	{
-		case SM_DETECT:
-		buttons = ~PINA & 0x03;
-		if (buttons == 0x00)
-		{
-			SM_STATE = SM_NOPRESS;
+		case SM_ZERO:
+		if (!button1 && !button2)
+		{ 
+			SM_STATE = SM_ZERO;
 		}
-		else if (buttons == 0x01)
+		else if (button1 && !button2)
 		{
 			SM_STATE = SM_INCREMENT;
 		}
-		else if (buttons == 0x02)
+		else if (!button1 && button2)
 		{
 			SM_STATE = SM_DECREMENT;
 		}
-		else if (buttons  == 0x03)
+		else if (button1 && button2)
 		{
+			lightup = 0;
 			SM_STATE = SM_ZERO;
-		}
-		else
-		{
-			SM_STATE = SM_DETECT;
 		}
 		break;
 		
 		case SM_INCREMENT:
-		if (lightup < 9)
+		if ((lightup < 9) && (cnt <= 0))
 		{
-		lightup = lightup + 1;
+			lightup = lightup + 1;
 		}
-		SM_STATE = SM_DETECT;
+		
+		if (!button1 && !button2)
+		{
+			SM_STATE = SM_ZERO;
+				cnt = 0;
+		}
+		else if (button1 && !button2)
+		{
+			cnt = cnt +1;
+			if (cnt >= 10)
+			{
+			cnt = 0;
+			}
+			SM_STATE = SM_INCREMENT;
+			
+			
+		}
+		else if (!button1 && button2)
+		{
+			SM_STATE = SM_DECREMENT;
+				cnt = 0;
+		}
+		else if (button1 && button2)
+		{
+			lightup = 0;
+			SM_STATE = SM_ZERO;
+				cnt = 0;
+		}
 		break;
 		
 		case SM_DECREMENT:
-		if (lightup > 0)
+		if ((lightup > 0) && (cnt <= 0))
 		{
-		lightup = lightup - 1;
+			lightup = lightup - 1;
 		}
-		SM_STATE = SM_DETECT;
-		break;
-		
-		case SM_ZERO:
-		lightup = 0;
-		SM_STATE = SM_DETECT;
-		break;
-		
-		case SM_NOPRESS:
-		SM_STATE = SM_DETECT;
+
+		if (!button1 && !button2)
+		{
+			SM_STATE = SM_ZERO;
+				cnt = 0;
+		}
+		else if (button1 == 1 && button2 == 0)
+		{
+			SM_STATE = SM_INCREMENT;
+				cnt = 0;
+		}
+		else if (button1 == 0 && button2 == 1)
+		{
+			SM_STATE = SM_DECREMENT;
+			cnt = cnt + 1;
+			if (cnt >= 10)
+			{
+					cnt = 0;
+				}
+			}
+	
+		else if (button1 == 1 && button2 == 1)
+		{
+			lightup = 0;
+			SM_STATE = SM_ZERO;
+				cnt = 0;
+		}
 		break;
 	}
 }
@@ -119,15 +161,20 @@ void main()
 {	DDRA = 0x00; PORTA = 0xFF;
 	DDRC = 0xFF; PORTC = 0x00;
 	DDRD = 0xFF; PORTD = 0x00;
-	TimerSet(1000);
+	TimerSet(150);
 	TimerOn();
 	LCD_init();
-	SM_STATE = SM_DETECT;
+	SM_STATE = SM_ZERO;
+	lightup = 0;
+	button1 = !(PINA & 0x01);
+	button2 = !(PINA & 0x02);
 	
 	while(1) {
+		button1 = !(PINA & 0x01);
+		button2 = !(PINA & 0x02);
 		SM_TICK();
 		LCD_Cursor(1);
-		LCD_WriteData(lightup + '0');
+		LCD_WriteData('0' + lightup);
 		while (!TimerFlag);
 		TimerFlag = 0;
 
