@@ -10,6 +10,7 @@ volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer
 unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
 unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
 unsigned short lightup = 0;
+unsigned short lightup1 = 0;
 unsigned char button1 = 0x00;
 unsigned char button2 = 0x00;
 unsigned char button3 = 0x00;
@@ -17,6 +18,9 @@ unsigned char button4 = 0x00;
 unsigned char column = 0x00;
 unsigned char row = 0x00;
 unsigned short cnt = 0;
+unsigned short cnt1 = 0;
+unsigned short player1p = 0;
+unsigned short player2p = 0;
 
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
@@ -87,13 +91,12 @@ void SM_TICK()
 		}
 		else if ((button1 == 0x01) && (button2 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE = SM_ZERO;
 		}
 		break;
 		
 		case SM_INCREMENT:
-		if ((lightup < 9) && (cnt <= 0))
+		if ((lightup < 6) && (cnt <= 0))
 		{
 			lightup = lightup + 1;
 		}
@@ -106,7 +109,7 @@ void SM_TICK()
 		else if ((button1 == 0x01) && (button2 == 0x00))
 		{
 			cnt = cnt +1;
-			if (cnt >= 10)
+			if (cnt >= 5)
 			{
 				cnt = 0;
 			}
@@ -121,14 +124,13 @@ void SM_TICK()
 		}
 		else if ((button1 == 0x01) && (button2 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE = SM_ZERO;
 			cnt = 0;
 		}
 		break;
 		
 		case SM_DECREMENT:
-		if ((lightup > 0) && (cnt <= 0))
+		if ((lightup > 1) && (cnt <= 0))
 		{
 			lightup = lightup - 1;
 		}
@@ -147,7 +149,7 @@ void SM_TICK()
 		{
 			SM_STATE = SM_DECREMENT;
 			cnt = cnt + 1;
-			if (cnt >= 10)
+			if (cnt >= 5)
 			{
 				cnt = 0;
 			}
@@ -155,7 +157,6 @@ void SM_TICK()
 		
 		else if ((button1 == 0x01) && (button2 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE = SM_ZERO;
 			cnt = 0;
 		}
@@ -182,28 +183,27 @@ void SM_TICK2()
 		}
 		else if ((button3 == 0x01) && (button4 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE2 = SM2_ZERO;
 		}
 		break;
 		
 		case SM2_INCREMENT:
-		if ((lightup < 9) && (cnt <= 0))
+		if ((lightup1 < 6) && (cnt1 = 0))
 		{
-			lightup = lightup + 1;
+			lightup1 = lightup1 + 1;
 		}
 		
 		if ((button3 == 0x00) && (button4 == 0x00))
 		{
 			SM_STATE2 = SM2_ZERO;
-			cnt = 0;
+			cnt1 = 0;
 		}
 		else if ((button3 == 0x01) && (button4 == 0x00))
 		{
-			cnt = cnt +1;
-			if (cnt >= 10)
+			cnt1 = cnt1 +1;
+			if (cnt1 >= 5)
 			{
-				cnt = 0;
+				cnt1 = 0;
 			}
 			SM_STATE2 = SM2_INCREMENT;
 			
@@ -212,80 +212,144 @@ void SM_TICK2()
 		else if ((button3 == 0x00) && (button4 == 0x01))
 		{
 			SM_STATE2 = SM2_DECREMENT;
-			cnt = 0;
+			cnt1= 0;
 		}
 		else if ((button3 == 0x01) && (button4 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE2 = SM2_ZERO;
-			cnt = 0;
+			cnt1 = 0;
 		}
 		break;
 		
 		case SM2_DECREMENT:
-		if ((lightup > 0) && (cnt <= 0))
+		if ((lightup1 > 1) && (cnt1 <= 0))
 		{
-			lightup = lightup - 1;
+			lightup1 = lightup1 - 1;
 		}
 
 		if ((button3 == 0x00) && (button4 == 0x00))
 		{
 			SM_STATE2 = SM2_ZERO;
-			cnt = 0;
+			cnt1 = 0;
 		}
 		else if ((button3 == 0x01) && (button4 == 0x00))
 		{
 			SM_STATE2 = SM2_INCREMENT;
-			cnt = 0;
+			cnt1 = 0;
 		}
 		else if ((button3 == 0x00) && (button4 == 0x01))
 		{
 			SM_STATE2 = SM2_DECREMENT;
-			cnt = cnt + 1;
-			if (cnt >= 10)
+			cnt1 = cnt1 + 1;
+			if (cnt1 >= 5)
 			{
-				cnt = 0;
+				cnt1 = 0;
 			}
 		}
 		
 		else if ((button3 == 0x01) && (button4 == 0x01))
 		{
-			lightup = 0;
 			SM_STATE2 = SM2_ZERO;
-			cnt = 0;
+			cnt1 = 0;
 		}
 		break;
 	}
 }
+void intromessage() 
+{	for(i = 0;  i <= 20; ++i)
+{
+	LCD_DisplayString(1, "Welcome Ping Pong Playa");
+	 while (!TimerFlag);
+	TimerFlag = 0;
+}
+ while((button1 == 0x00) && (button2 == 0x00) && (button3 == 0x00) && (button4 == 0x00))
+	{	button1 = !(PIND & 0x01);
+		button2 = !(PIND & 0x02);
+		button3 = !(PIND & 0x04);
+		button4 = !(PIND & 0x08);
+	 LCD_DisplayString(1, "Press any key to continue")
+	}
+}
+void paddles() 
+{
+	if (lightup == 1) 
+	{
+		
+	}
+	else if (lightup == 2)
+	{
+	
+	}
+	else if (lightup == 3) 
+	{
+		
+	}
+	else if (lightup == 4)
+	{
+	
+	}
+	else if (lightup == 5)
+	{
+		
+	}
+	else 
+	{
+		
+	}
+}
+void paddles2() 
+{
+	if (lightup1 == 1) 
+	{
+		
+	}
+	else if (lightup1 == 2)
+	{
+	
+	}
+	else if (lightup1 == 3) 
+	{
+		
+	}
+	else if (lightup1 == 4)
+	{
+	
+	}
+	else if (lightup1 == 5)
+	{
+		
+	}
+	else 
+	{
+		
+	}
+}
 void main()
 {	DDRA = 0x00; PORTA = 0xFF;
+ 	DDRB = 0x0
 	DDRC = 0xFF; PORTC = 0x00;
 	DDRD = 0xF0; PORTD = 0x0F;
 	TimerSet(150);
 	TimerOn();
 	LCD_init();
 	SM_STATE = SM_ZERO;
-	lightup = 0;
-	button1 = !(PIND & 0x01);
-	button2 = !(PIND & 0x02);
-	button3 = !(PIND & 0x04);
-	button4 = !(PIND & 0x08);
-	row = 0xE3;
-	column = 0x8A;
-	PORTB = column;
-	PORTA = row;
+ 	SM2_STATE = SM2_ZERO;
+	lightup = 3;
+ 	lightup1 = 3;
+	intromessage();
 	while(1) {
 		button1 = !(PIND & 0x01);
 		button2 = !(PIND & 0x02);
 		button3 = !(PIND & 0x04);
 		button4 = !(PIND & 0x08);
-
-		PORTB = column;
-		PORTA = row;
 		SM_TICK(); // paddle1
 		SM_TICK2(); // paddle2
+		paddles();
+		paddles2();
 		LCD_Cursor(1);
-		LCD_WriteData('0' + lightup);
+		LCD_WriteData('0' + player1p);
+		LCD_Cursor(1);
+		LCD_WriteData('0' + player2p);
 		while (!TimerFlag);
 		TimerFlag = 0;
 
