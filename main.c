@@ -338,6 +338,7 @@ void main()
  	lightup1 = 3;
 	intromessage();
 	while(1) {
+		//button input to move paddles
 		button1 = !(PIND & 0x01);
 		button2 = !(PIND & 0x02);
 		button3 = !(PIND & 0x04);
@@ -346,10 +347,13 @@ void main()
 		SM_TICK2(); // paddle2
 		paddles();
 		paddles2();
-		LCD_Cursor(1);
+		//display points
+		LCD_DisplayString(1, "Player 1: ");
+		LCD_Cursor(11);
 		LCD_WriteData('0' + player1p);
-		LCD_Cursor(1);
-		LCD_WriteData('0' + player2p);
+		//LCD_DisplayString(1, "Player 2: ");
+		//LCD_Cursor(32);
+		//LCD_WriteData('0' + player2p);
 		while (!TimerFlag);
 		TimerFlag = 0;
 
