@@ -4,6 +4,7 @@
 
 enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE;
 enum SM_STATES2 {SM2_INCREMENT, SM2_DECREMENT, SM2_ZERO} SM_STATE2;
+enum PHYSICS {SM_UPLEFT, SM_UPRIGHT, SM_DOWNLEFT, SM_DOWNRIGHT, SM_SRIGHT, SM_LEFT} SM_STATE3;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
 
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
@@ -16,13 +17,14 @@ unsigned char button2 = 0x00;
 unsigned char button3 = 0x00;
 unsigned char button4 = 0x00;
 unsigned char column = 0x00;
-unsigned char row = 0x00;
+unsigned char padrow1 = 0x00;
+unsigned char padrow2 = 0x00;
 unsigned short cnt = 0;
 unsigned short cnt1 = 0;
 unsigned short player1p = 0;
 unsigned short player2p = 0;
 unsigned short i;
-
+unsigned short direction = 0;
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
 	TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
@@ -80,7 +82,7 @@ enum SM1_States {sm1_display};
 int SM1_Tick(int state) {
 
 	// === Local Variables ===
-	static unsigned char column_val = 0x03; // sets the pattern displayed on columns
+	static unsigned char column_val = 0x01; // sets the pattern displayed on columns
 	static unsigned char column_sel = 0x7F; // grounds column to display pattern
 	
 	// === Transitions ===
@@ -110,12 +112,17 @@ int SM1_Tick(int state) {
 		default:   	        break;
 	}
 	
-	PORTB = column_val; // PORTA displays column pattern
-	PORTA = column_sel; // PORTB selects column to display pattern
+	PORTA = column_val; // PORTA displays column pattern
+	PORTB = column_sel; // PORTB selects column to display pattern
 
 	return state;
 };
-
+void physics () 
+{
+	switch(SM_STATE3) 
+	{
+		case SM_SRIGHT:
+		break;
 void SM_TICK()
 {
 	switch(SM_STATE)
@@ -302,7 +309,7 @@ void SM_TICK2()
 void intromessage()
 {	for(unsigned short i = 0;  i <= 10; ++i)
 	{
-		LCD_DisplayString(1, "Welcome Ping    Pong Playa");
+		LCD_DisplayString(1, "Welcome Ping    Pong Playa!!!");
 		while (!TimerFlag);
 		TimerFlag = 0;
 	}
@@ -318,57 +325,138 @@ void paddles()
 {
 	if (lightup == 1)
 	{
-		for(i = 0; i < 9; ++i)
+		for(i = 0; i < 3; ++i)
 		{
-			
+			column_sel1 = 0x7F;
+			column_val1 = 0x01;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val1 = column_val1 << 1;
 		}
 	}
 	else if (lightup == 2)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel1 = 0x7F;
+			column_val1 = 0x02;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val1 = column_val1 << 1;
+		}
 	}
 	else if (lightup == 3)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel = 0x7F;
+			column_val = 0x04;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val = column_val << 1;
+		}
 	}
 	else if (lightup == 4)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel = 0x7F;
+			column_val = 0x08;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val = column_val << 1;
+		}
 	}
 	else if (lightup == 5)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel = 0x7F;
+			column_val = 0x10;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val = column_val << 1;
+		}
 	}
 	else
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel = 0x7F;
+			column_val = 0x20;
+			PORTA = column_val1;
+			PORTB = column_sel1;
+			column_val = column_val << 1;
+		}
 	}
 }
 void paddles2()
 {
 	if (lightup1 == 1)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x01;
+			PORTA = column_val2;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}	
 	}
 	else if (lightup1 == 2)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x02;
+			PORTA = column_val2;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}
 	}
 	else if (lightup1 == 3)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x04;
+			PORTA = column_val2;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}
 	}
 	else if (lightup1 == 4)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x08;
+			PORTA = column_val2;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}
 	}
 	else if (lightup1 == 5)
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x10;
+			PORTA = column_val1;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}
 	}
 	else
 	{
-		
+		for(i = 0; i < 3; ++i)
+		{
+			column_sel2 = 0xFE;
+			column_val2 = 0x20;
+			PORTA = column_val1;
+			PORTB = column_sel2;
+			column_val2 = column_val2 << 1;
+		}
 	}
 }
 void checkrows () {
@@ -379,13 +467,14 @@ void main()
 	DDRB = 0xFF; PORTB = 0x00;
 	DDRC = 0xFF; PORTC = 0x00;
 	DDRD = 0xF0; PORTD = 0x0F;
-	TimerSet(300);
+	TimerSet(150);
 	TimerOn();
 	LCD_init();
 	SM_STATE = SM_ZERO;
 	SM_STATE2 = SM2_ZERO;
 	lightup = 3;
 	lightup1 = 3;
+ 	direction = 1;
 	intromessage();
 	while(1) {
 		//button input to move paddles
@@ -393,11 +482,14 @@ void main()
 		button2 = !(PIND & 0x02);
 		button3 = !(PIND & 0x04);
 		button4 = !(PIND & 0x08);
-		SM_TICK(); // paddle1
-		SM_TICK2(); // paddle2
+		
+		//LED MATRIX GAMEPLAY
+		SM_TICK(); // if button pressed moved paddle1
+		SM_TICK2(); // if button pressed move paddle2
 		SM1_Tick(1);
-		paddles();
-		paddles2();
+		paddles(); // move paddle 1
+		paddles2(); // move paddle 2
+		
 		//display points
 		LCD_DisplayString(1, "Player 1: ");
 		LCD_Cursor(11);
