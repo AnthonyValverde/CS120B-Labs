@@ -4,7 +4,7 @@
 
 enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE;
 enum SM_STATES2 {SM2_INCREMENT, SM2_DECREMENT, SM2_ZERO} SM_STATE2;
-enum PHYSICS {SM_UPLEFT, SM_UPRIGHT, SM_DOWNLEFT, SM_DOWNRIGHT, SM_SRIGHT, SM_LEFT} SM_STATE3;
+enum PHYSICS {SM_UPLEFT, SM_UPRIGHT, SM_DOWNLEFT, SM_DOWNRIGHT, SM_SRIGHT, SM_SLEFT} SM_STATE3;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
 
 // Internal variables for mapping AVR's ISR to our cleaner TimerISR model.
@@ -122,7 +122,40 @@ void physics ()
 	switch(SM_STATE3) 
 	{
 		case SM_SRIGHT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 >> 1 ;
+			column_sel3 = !(column_sel3);
 		break;
+		case SM_SLEFT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 << 1 ;
+			column_sel3 = !(column_sel3);
+		break;
+		case SM_DOWNRIGHT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 >> 1 ;
+			column_sel3 = !(column_sel3);
+			column_val3 = column val3 >> 1;
+		break;
+		case SM_DOWNLEFT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 << 1 ;
+			column_sel3 = !(column_sel3);
+			column_val3 = column val3 << 1;
+		break;
+		case SM_UPRIGHT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 >> 1 ;
+			column_sel3 = !(column_sel3);
+			column_val3 = column val3 >> 1;
+		break;
+		case SM_UPLEFT:
+			column_sel3 = !(column_sel3);
+			column_sel3 = column_sel3 << 1 ;
+			column_sel3 = !(column_sel3);
+			column_val3 = column val3 << 1;
+		break;
+	}
 void SM_TICK()
 {
 	switch(SM_STATE)
@@ -472,6 +505,7 @@ void main()
 	LCD_init();
 	SM_STATE = SM_ZERO;
 	SM_STATE2 = SM2_ZERO;
+ 	SM_STATE3 - SM_SRIGHT
 	lightup = 3;
 	lightup1 = 3;
  	direction = 1;
