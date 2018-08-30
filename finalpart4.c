@@ -4,7 +4,7 @@
 
 enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE; //buttons
 enum SM_STATES2 {SM2_INCREMENT, SM2_DECREMENT, SM2_ZERO} SM_STATE2; //buttons
-enum SM_STATES3 {SM_UPLEFT, SM_UPRIGHT, SM_DOWNLEFT, SM_DOWNRIGHT, SM_SRIGHT, SM_SLEFT, SM_SCORE} SM_STATE3;// ball direction states
+enum SM_STATES3 {SM_UPLEFT, SM_UPRIGHT, SM_DOWNLEFT, SM_DOWNRIGHT, SM_SRIGHT, SM_SLEFT, SM_SCORE, SM_SCORE2} SM_STATE3;// ball direction states
 enum SM_STATES4 {SM_POS1,SM_POS2, SM_POS3, SM_POS4,SM_POS5, SM_POS6}SM_STATE4;
 enum SM_STATES5 {SM2_POS1,SM2_POS2, SM2_POS3,SM2_POS4,SM2_POS5,SM2_POS6}SM_STATE5;
 volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
@@ -34,7 +34,7 @@ unsigned char column_sel1 = 0x00; // grounds column to display pattern
 
 unsigned char column_sel2 = 0x00; // grounds column to display pattern
 
-unsigned char column_sel3 = 0xF7; // grounds column to display pattern
+unsigned char column_sel3 = 0xEF; // grounds column to display pattern
 int arr[8] = {0x01, 0x02,0x04,0x08,0x10,0x20,0x40,0x80};
 int arr2[8] = {0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F};
 void TimerOn() {
@@ -94,11 +94,11 @@ void physics ()
 		case SM_SRIGHT:
 		if ((ballyval == lightup1 + 1) && (ballxval == 7))
 		{
-			SM_STATE = SM_UPLEFT;
+			SM_STATE3 = SM_UPLEFT;
 		}
 		else if ((ballyval == lightup1 - 1) && (ballxval == 7))
 		{
-			SM_STATE = SM_DOWNLEFT;
+			SM_STATE3 = SM_DOWNLEFT;
 		}
 		else if ((ballyval == lightup1) && (ballxval == 7))
 		{
@@ -106,7 +106,7 @@ void physics ()
 		}
 		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
 		{
-			SM_SCORE;
+			SM_STATE3 = SM_SCORE1;
 		}
 		else {
 			column_sel3 = !(column_sel3);
@@ -117,21 +117,21 @@ void physics ()
 		break;
 		
 		case SM_SLEFT:
-		if ((ballyval == lightup + 1) && (ballxval == 0))
+		if ((ballyval == lightup + 1) && (ballxval == 1))
 		{
-			SM_STATE = SM_UPRIGHT;
+			SM_STATE3 = SM_UPRIGHT;
 		}
-		else if ((ballyval == lightup - 1)  && (ballxval == 0))
+		else if ((ballyval == lightup - 1)  && (ballxval == 1))
 		{
-			SM_STATE = SM_DOWNRIGHT;
+			SM_STATE3 = SM_DOWNRIGHT;
 		}
-		else if ((ballyval == lightup)  && (ballxval == 0))
+		else if ((ballyval == lightup)  && (ballxval == 1))
 		{
 			SM_STATE3 = SM_SRIGHT;
 		}
-		else if ((abs(ballyval - lightup) >= 2)  && (ballxval == 0))
+		else if ((abs(ballyval - lightup) >= 2)  && (ballxval == 1))
 		{
-			SM_SCORE;
+			SM_STATE3 = SM_SCORE2;
 		}
 		else {
 			column_sel3 = !(column_sel3);
@@ -144,11 +144,11 @@ void physics ()
 		case SM_DOWNRIGHT:
 		if ((ballyval == lightup1 +1)  && (ballxval == 7))
 		{
-			SM_STATE = SM_DOWNLEFT;
+			SM_STATE3 = SM_DOWNLEFT;
 		}
 		else if ((ballyval == lightup1 -1)  && (ballxval == 7))
 		{
-			SM_STATE = SM_UPLEFT;
+			SM_STATE3 = SM_UPLEFT;
 		}
 		
 		else if ((ballyval == lightup1)  && (ballxval == 7))
@@ -157,7 +157,11 @@ void physics ()
 		}
 		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
 		{
-			SM_SCORE;
+			SM_STATE3 = SM_SCORE1;
+		}
+		else if ((ballyval == 1)  && (ballxval >=2) && (ballxval <=7))
+		{
+			SM_STATE3 = SM_UPRIGHT;
 		}
 		else
 		{
@@ -171,22 +175,26 @@ void physics ()
 		break;
 		
 		case SM_DOWNLEFT:
-		if ((ballyval == lightup +1) && (ballxval == 0))
+		if ((ballyval == lightup +1) && (ballxval == 1))
 		{
-			SM_STATE = SM_DOWNRIGHT;
+			SM_STATE3 = SM_DOWNRIGHT;
 		}
-		else if ((ballyval == lightup -1) && (ballxval == 0))
+		else if ((ballyval == lightup -1) && (ballxval == 1))
 		{
-			SM_STATE = SM_UPRIGHT;
+			SM_STATE3 = SM_UPRIGHT;
 		}
 		
-		else if ((ballyval == lightup)  && (ballxval == 0))
+		else if ((ballyval == lightup)  && (ballxval == 1))
 		{
 			SM_STATE3 = SM_SRIGHT;
 		}
-		else if ((abs(ballyval - lightup) >= 2 ) && (ballxval == 0))
+		else if ((abs(ballyval - lightup) >= 2 ) && (ballxval == 1))
 		{
-			SM_SCORE;
+			SM_STATE3 = SM_SCORE2;
+		}
+		else if ((ballyval == 1)  && (ballxval >=2) && (ballxval <=7))
+		{
+			SM_STATE3 = SM_UPLEFT;
 		}
 		else
 		{
@@ -201,11 +209,11 @@ void physics ()
 		case SM_UPRIGHT:
 		if ((ballyval == lightup1 +1)  && (ballxval == 7))
 		{
-			SM_STATE = SM_DOWNLEFT;
+			SM_STATE3 = SM_DOWNLEFT;
 		}
 		else if ((ballyval == lightup1 -1)  && (ballxval == 7))
 		{
-			SM_STATE = SM_UPLEFT;
+			SM_STATE3 = SM_UPLEFT;
 		}
 		
 		else if ((ballyval == lightup1)  && (ballxval == 7))
@@ -214,7 +222,11 @@ void physics ()
 		}
 		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
 		{
-			SM_SCORE;
+			SM_STATE3 = SM_SCORE1;
+		}
+		else if ((ballyval == 1)  && (ballxval >=2) && (ballxval <=7))
+		{
+			SM_STATE3 = SM_DOWNRIGHT;
 		}
 		else
 		{
@@ -227,22 +239,26 @@ void physics ()
 		break;
 		
 		case SM_UPLEFT:
-		if ((ballyval == lightup +1)  && (ballxval == 0))
+		if ((ballyval == lightup +1)  && (ballxval == 1)
 		{
-			SM_STATE = SM_DOWNRIGHT;
+			SM_STATE3 = SM_DOWNRIGHT;
 		}
-		else if ((ballyval == lightup -1)  && (ballxval == 0))
+		else if ((ballyval == lightup -1)  && (ballxval == 1)
 		{
-			SM_STATE = SM_UPRIGHT;
+			SM_STATE3 = SM_UPRIGHT;
 		}
 		
-		else if ((ballyval == lightup)  && (ballxval == 0))
+		else if ((ballyval == lightup)  && (ballxval == 1)
 		{
 			SM_STATE3 = SM_SRIGHT;
 		}
-		else if ((abs(ballyval - lightup) >= 2 )  && (ballxval == 0))
+		else if ((abs(ballyval - lightup) >= 2 )  && (ballxval == 1))
 		{
-			SM_SCORE;
+			SM_STATE3= SM_SCORE2;
+		}
+		else if ((ballyval == 1)  && (ballxval >=2) && (ballxval <=7))
+		{
+			SM_STATE3 = SM_DOWNLEFT;
 		}
 		else
 		{
@@ -253,6 +269,10 @@ void physics ()
 			ballyval = ballyval - 1;
 		}
 		break;
+		case SM_SCORE1:
+		
+		break;
+		case SM_SCORE2
 	}
 }
 void SM_TICK()
@@ -563,28 +583,26 @@ void paddle1()
 }
 void printtoports()
 {
-	
-		PORTB = arr[j];
 		if (j == 0)
 		{
+			PORTB = arr[j];
 			PORTA = column_sel1;
 		}
-		else if ((j >= 1) && (j <= 7))
+		else if ((j >= 1) && (j < 7))
 		{
-			PORTA  = 0xFF;
 			if ( j == ballxval)
 			{
-			//PORTA  = column_sel3;
+			PORTA  = column_sel3;
 			}
+			PORTA  = 0xFF;
+			PORTB = arr[j];
 		} 
 		else 
-		{
+		{	PORTB = arr[j];
 			PORTA = column_sel2;
 			j = 0;
 		}
-		j = j+ 1;
-	
-	
+		j = j+ 1;	
 }
 void displayfunction()
 {
@@ -615,7 +633,6 @@ void main()
 	SM_STATE5 = SM2_POS3;
 	lightup = 3;
 	lightup1 = 3;
-	direction = 1;
 	ballyval = 4;
 	ballxval = 4;
 	intromessage();
