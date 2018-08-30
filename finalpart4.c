@@ -270,9 +270,17 @@ void physics ()
 		}
 		break;
 		case SM_SCORE1:
-		
+			player1p = player1p + 1;
+			ballxval = 4;
+			ballyval = 4;
+			SM_STATE3 = SM_SRIGHT;
 		break;
-		case SM_SCORE2
+		case SM_SCORE2:
+			 player2p = player2p + 1;
+			 ballxval = 4;
+			 ballyval = 4;
+			 SM_STATE3 = SM_SLEFT;
+		break;
 	}
 }
 void SM_TICK()
@@ -312,7 +320,7 @@ void SM_TICK()
 		else if ((button1 == 0x01) && (button2 == 0x00))
 		{
 			cnt = cnt +1;
-			if (cnt >= 20)
+			if (cnt >= 100)
 			{
 				cnt = 0;
 			}
@@ -352,7 +360,7 @@ void SM_TICK()
 		{
 			SM_STATE = SM_DECREMENT;
 			cnt = cnt + 1;
-			if (cnt >= 20)
+			if (cnt >= 100)
 			{
 				cnt = 0;
 			}
@@ -404,7 +412,7 @@ void SM_TICK2()
 		else if ((button3 == 0x01) && (button4 == 0x00))
 		{
 			cnt1 = cnt1 +1;
-			if (cnt1 >= 20)
+			if (cnt1 >= 100)
 			{
 				cnt1 = 0;
 			}
@@ -444,7 +452,7 @@ void SM_TICK2()
 		{
 			SM_STATE2 = SM2_DECREMENT;
 			cnt1 = cnt1 + 1;
-			if (cnt1 >= 20)
+			if (cnt1 >= 100)
 			{
 				cnt1 = 0;
 			}
@@ -607,7 +615,7 @@ void printtoports()
 void displayfunction()
 {
 	displaycounter1 = displaycounter1 + 1;
-	if(displaycounter1 == 100)
+	if(displaycounter1 == 150)
 	{
 		LCD_DisplayString(1, "Player 1: ");
 		LCD_Cursor(11);
@@ -648,6 +656,7 @@ void main()
 		paddle1();
 		paddle2();
 		printtoports();
+		physics();
 		//display points
 		displayfunction();
 		while (!TimerFlag);
