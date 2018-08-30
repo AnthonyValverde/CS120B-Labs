@@ -88,44 +88,74 @@ void physics ()
 	switch(SM_STATE3)
 	{
 		case SM_SRIGHT:
-		if (ballxval < 7) 
+		if ((ballyval == lightup1 + 1) && (ballxval == 7))
 		{
-		column_sel3 = !(column_sel3);
-		column_sel3 = column_sel3 >> 1 ;
-		column_sel3 = !(column_sel3);
-		ballxval= ballxval + 1;
-		} 
-		if (ballxval >= 7)
+		SM_STATE = SM_UPLEFT;
+		}
+		else if ((ballyval == lightup1 - 1) && (ballxval == 7))
+		{
+		SM_STATE = SM_DOWNLEFT;
+		}
+		else if ((ballyval == lightup1) && (ballxval == 7))
 		{
 		SM_STATE3 = SM_SLEFT;
 		}
-		if ((ballyval == 1) && (lightup1 != 1))
+		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
 		{
-		SM_STATE3 = SM_SCORE;
+		SM_SCORE;
 		}
-		if ((ballyval == 7) && (lightup1 != 6))
-		{
-		SM_STATE3 = SM_SCORE;
+		else {
+		column_sel3 = !(column_sel3);
+		column_sel3 = column_sel3 >> 1 ;
+		column_sel3 = !(column_sel3);
+		ballxval = ballxval + 1;
 		}
-		if (abs(ballyval - lightup1) <= 2 )
 		break;
 		
 		case SM_SLEFT:
-		if (ballxval > 0)
+		if ((ballyval == lightup + 1) && (ballxval == 0))
 		{
+		SM_STATE = SM_UPRIGHT;
+		}
+		else if ((ballyval == lightup - 1)  && (ballxval == 0))
+		{
+		SM_STATE = SM_DOWNRIGHT;
+		}
+		else if ((ballyval == lightup)  && (ballxval == 0))
+		{
+		SM_STATE3 = SM_SRIGHT;
+		}
+		else if ((abs(ballyval - lightup) >= 2)  && (ballxval == 0))
+		{
+		SM_SCORE;
+		}
+		else {
 		column_sel3 = !(column_sel3);
-		column_sel3 = column_sel3 << 1 ;
+		column_sel3 = column_sel3 >> 1 ;
 		column_sel3 = !(column_sel3);
 		ballxval = ballxval - 1;
 		}
-		if (ballxval == 0)
-		{
-		SM_STATE3 = SM_RIGHT;
-		}	
 		break;
 		
 		case SM_DOWNRIGHT:
-		if (( ballxval < 7) &&  ((ballyval < 7))
+		if ((ballyval == lightup1 +1)  && (ballxval == 7))
+		{
+		SM_STATE = SM_DOWNLEFT
+		}
+		else if ((ballyval == lightup1 -1)  && (ballxval == 7))
+		{
+		SM_STATE = SM_UPLEFT;
+		}
+		
+		else if ((ballyval == lightup1)  && (ballxval == 7))
+		{
+		SM_STATE3 = SM_SRIGHT;
+		}
+		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
+		{
+		SM_SCORE;
+		}
+		else
 		{
 		column_sel3 = !(column_sel3);
 		column_sel3 = column_sel3 >> 1 ;
@@ -133,18 +163,28 @@ void physics ()
 		ballxval = ballxval + 1;
 		ballyval = ballyval + 1;
 		}
-		if ((ballxval < 7) && (ballyval == 7) && (direction == 0))
-		{
-		SM_STATE3 = SM_UPRIGHT;
-		}
-		if ((ballxval < 7) && (ballyval == 7) && (direction == 0))
-		{
-		SM_STATE3 = SM_LEFT;
-		}
+		
 		break;
 		
 		case SM_DOWNLEFT:
-		if ((ballxval > 0 ) && (ballyval < 7))
+		if ((ballyval == lightup +1) && (ballxval == 0))
+		{
+		SM_STATE = SM_DOWNRIGHT
+		}
+		else if ((ballyval == lightup -1) && (ballxval == 0))
+		{
+		SM_STATE = SM_UPRIGHT;
+		}
+		
+		else if ((ballyval == lightup)  && (ballxval == 0))
+		{
+		SM_STATE3 = SM_SRIGHT;
+		}
+		else if ((abs(ballyval - lightup) >= 2 ) && (ballxval == 0))
+		{
+		SM_SCORE;
+		}
+		else
 		{
 		column_sel3 = !(column_sel3);
 		column_sel3 = column_sel3 << 1 ;
@@ -155,7 +195,24 @@ void physics ()
 		break;
 
 		case SM_UPRIGHT:
-		if ((ballyval > 0) && (ballxval < 7))
+		if ((ballyval == lightup1 +1)  && (ballxval == 7))
+		{
+		SM_STATE = SM_DOWNLEFT
+		}
+		else if ((ballyval == lightup1 -1)  && (ballxval == 7))
+		{
+		SM_STATE = SM_UPLEFT;
+		}
+		
+		else if ((ballyval == lightup1)  && (ballxval == 7))
+		{
+		SM_STATE3 = SM_SLEFT;
+		}
+		else if ((abs(ballyval - lightup1) >= 2 )  && (ballxval == 7))
+		{
+		SM_SCORE;
+		}
+		else
 		{
 		column_sel3 = !(column_sel3);
 		column_sel3 = column_sel3 >> 1 ;
@@ -166,7 +223,24 @@ void physics ()
 		break;
 		
 		case SM_UPLEFT:
-		if ((ballxval > 0) && (ballyval > 0))
+		if ((ballyval == lightup +1)  && (ballxval == 0))
+		{
+		SM_STATE = SM_DOWNRIGHT;
+		}
+		else if ((ballyval == lightup -1)  && (ballxval == 0))
+		{
+		SM_STATE = SM_UPRIGHT;
+		}
+		
+		else if ((ballyval == lightup)  && (ballxval == 0))
+		{
+		SM_STATE3 = SM_SRIGHT;
+		}
+		else if ((abs(ballyval - lightup) >= 2 )  && (ballxval == 0))
+		{
+		SM_SCORE;
+		}
+		else
 		{
 		column_sel3 = !(column_sel3);
 		column_sel3 = column_sel3 << 1 ;
