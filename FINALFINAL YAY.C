@@ -472,7 +472,7 @@ void SM_TICK2()
 	}
 }
 void intromessage()
-{	for(unsigned short i = 0;  i <= 30; ++i)
+{	for(unsigned short i = 0;  i <= 75; ++i)
 	{
 		LCD_DisplayString(1, "Welcome Ping    Pong Playa!!!");
 		while (!TimerFlag);
