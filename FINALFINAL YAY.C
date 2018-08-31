@@ -273,6 +273,8 @@ void physics ()
 			player1p = player1p + 1;
 			ballxval = 4;
 			ballyval = 4;
+			ballperiod = 0;
+			j = 0;
 			column_sel3 = 0xF7;
 			SM_STATE3 = SM_SLEFT;
 			break;
@@ -281,6 +283,8 @@ void physics ()
 			player2p = player2p + 1;
 			ballxval = 4;
 			ballyval = 4;
+			ballperiod = 0;
+			j= 0;
 			column_sel3 = 0xF7;
 			SM_STATE3 = SM_SRIGHT;
 
