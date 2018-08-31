@@ -325,7 +325,7 @@ void SM_TICK()
 		else if ((button1 == 0x01) && (button2 == 0x00))
 		{
 			cnt = cnt +1;
-			if (cnt >= 200)
+			if (cnt >= 130)
 			{
 				cnt = 0;
 			}
@@ -365,7 +365,7 @@ void SM_TICK()
 		{
 			SM_STATE = SM_DECREMENT;
 			cnt = cnt + 1;
-			if (cnt >= 200)
+			if (cnt >= 130)
 			{
 				cnt = 0;
 			}
@@ -417,7 +417,7 @@ void SM_TICK2()
 		else if ((button3 == 0x01) && (button4 == 0x00))
 		{
 			cnt1 = cnt1 +1;
-			if (cnt1 >= 200)
+			if (cnt1 >= 130)
 			{
 				cnt1 = 0;
 			}
@@ -457,7 +457,7 @@ void SM_TICK2()
 		{
 			SM_STATE2 = SM2_DECREMENT;
 			cnt1 = cnt1 + 1;
-			if (cnt1 >= 200)
+			if (cnt1 >= 130)
 			{
 				cnt1 = 0;
 			}
