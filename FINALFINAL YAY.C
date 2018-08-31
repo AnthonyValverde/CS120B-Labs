@@ -18,7 +18,6 @@ unsigned char button3 = 0x00;
 unsigned char button4 = 0x00;
 unsigned short cnt = 0;
 unsigned short cnt1 = 0;
-unsigned short winperiod = 0;
 unsigned long lcdperiod = 0;
 unsigned short ballperiod = 0;
 unsigned short player1p = 0;
@@ -27,14 +26,12 @@ unsigned short i;
 unsigned short j=0;
 unsigned short ballyval = 0;
 unsigned short ballxval = 0;
-
 unsigned char column_sel1 = 0x00; // grounds column to display pattern
-
 unsigned char column_sel2 = 0x00; // grounds column to display pattern
-
 unsigned char column_sel3 = 0xF7; // grounds column to display pattern
 int arr[8] = {0x01, 0x02,0x04,0x08,0x10, 0x20, 0x40,0x80};
 int arr2[8] = {0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F};
+
 void TimerOn() {
 	// AVR timer/counter controller register TCCR1
 	TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
@@ -60,15 +57,12 @@ void TimerOn() {
 	//Enable global interrupts
 	SREG |= 0x80; // 0x80: 1000000
 }
-
 void TimerOff() {
 	TCCR1B = 0x00; // bit3bit1bit0=000: timer off
 }
-
 void TimerISR() {
 	TimerFlag = 1;
 }
-
 // In our approach, the C programmer does not touch this ISR, but rather TimerISR()
 ISR(TIMER1_COMPA_vect) {
 	// CPU automatically calls when TCNT1 == OCR1 (every 1 ms per TimerOn settings)
@@ -78,8 +72,6 @@ ISR(TIMER1_COMPA_vect) {
 		_avr_timer_cntcurr = _avr_timer_M;
 	}
 }
-
-
 // Set TimerISR() to tick every M ms
 void TimerSet(unsigned long M) {
 	_avr_timer_M = M;
@@ -270,6 +262,8 @@ void physics ()
 			break;
 			
 			case SM_SCORE1:
+			if ((player1p < 8 && player2p < 8))
+			{
 			player1p = player1p + 1;
 			ballxval = 4;
 			ballyval = 4;
@@ -277,9 +271,12 @@ void physics ()
 			j = 0;
 			column_sel3 = 0xF7;
 			SM_STATE3 = SM_SLEFT;
+			}
 			break;
 			
 			case SM_SCORE2:
+			if ((player1p < 8 && player2p < 8))
+			{
 			player2p = player2p + 1;
 			ballxval = 4;
 			ballyval = 4;
@@ -287,7 +284,7 @@ void physics ()
 			j= 0;
 			column_sel3 = 0xF7;
 			SM_STATE3 = SM_SRIGHT;
-
+			}
 			break;
 		}
 	}
