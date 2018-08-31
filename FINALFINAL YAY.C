@@ -581,9 +581,7 @@ void printtoports()
 }
 void displayfunction()
 {
-	lcdperiod = lcdperiod + 1;
-	if(lcdperiod == 3000000)
-	{
+	
 		LCD_DisplayString(1, "Player 1: ");
 		LCD_Cursor(12);
 		LCD_WriteData('0' + player1p);
@@ -591,7 +589,7 @@ void displayfunction()
 		LCD_Cursor(28);
 		LCD_WriteData('0' + player2p);
 		lcdperiod = 0;
-	}
+	
 }
 void main()
 {	DDRA = 0xFF; PORTA = 0x00;
@@ -609,6 +607,7 @@ void main()
 	ballyval = 4;
 	ballxval = 4;
 	intromessage();
+ 	displayfunction();
 	while(1) {
 		//button input to move paddles
 
@@ -619,12 +618,11 @@ void main()
 			button4 = !(PIND & 0x08);
 		SM_TICK(); // determines lightup value
 		SM_TICK2(); // determines lightup1 value
-		paddle1();
-		paddle2();
-		printtoports();
-		physics();
-		//display points
-		displayfunction();
+		paddle1(); //lightuo value determines position
+		paddle2(); //lightup1value determines position
+		printtoports(); // gets row values from position and prints it to ports
+		physics(); // game logic
+		
 		while (!TimerFlag);
 		TimerFlag = 0;
 
