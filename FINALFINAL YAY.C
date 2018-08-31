@@ -88,7 +88,7 @@ void TimerSet(unsigned long M) {
 void physics ()
 {
 	ballperiod = ballperiod + 1;
-	if (ballperiod >= 160)
+	if (ballperiod >= 140)
 	{
 		ballperiod = 0;
 		switch(SM_STATE3)
@@ -106,7 +106,7 @@ void physics ()
 			{
 				SM_STATE3 = SM_SLEFT;
 			}
-			else if ((abs(ballyval - lightup1) >= 3 )  && (ballxval == 7))
+			else if ((abs(ballyval - lightup1) >= 3 )  && (ballxval >= 6))
 			{
 				SM_STATE3 = SM_SCORE1;
 			}
