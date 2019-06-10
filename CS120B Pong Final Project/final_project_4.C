@@ -2,6 +2,37 @@
 #include <avr/interrupt.h>
 #include "io.c"
 
+enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE; //buttons
+enum SM_STATES2 {SM2_INCREMENT, SM2_DECREMENT, SM2_ZERO} SM_STATE2; //buttons
+volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
+unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
+unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
+unsigned short lightup = 0;
+unsigned short lightup1 = 0;
+unsigned char button1 = 0x00;
+unsigned char button2 = 0x00;
+unsigned char button3 = 0x00;
+unsigned char button4 = 0x00;
+unsigned short cnt = 0;
+unsigned short cnt1 = 0;
+unsigned short winperiod = 0;
+unsigned long lcdperiod = 0;
+unsigned short ballperiod = 0;
+unsigned short player1p = 0;
+unsigned short player2p = 0;
+unsigned short i;
+unsigned short j=0;
+unsigned short ballyval = 0;
+unsigned short ballxval = 0;
+
+unsigned char column_sel1 = 0x00; // grounds column to display pattern
+
+unsigned char column_sel2 = 0x00; // grounds column to display pattern
+
+unsigned char column_sel3 = 0xF7; // grounds column to display pattern
+int arr[8] = {0x01, 0x02,0x04,0x08,0x10, 0x20, 0x40,0x80};
+int arr2[8] = {0xFE, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF, 0x7F};
+
 void TimerOn() {
 		// AVR timer/counter controller register TCCR1
 		TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
