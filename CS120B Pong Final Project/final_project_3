@@ -120,7 +120,6 @@ void SM_TICK()
 			lightup = lightup + 1;
 		}
 
-
 		if ((button1 == 0x00) && (button2 == 0x00))
 		{
 			SM_STATE = SM_ZERO;
