@@ -2,6 +2,19 @@
 #include <avr/interrupt.h>
 #include "io.c"
 
+enum SM_STATES {SM_INCREMENT, SM_DECREMENT, SM_ZERO} SM_STATE; //buttons
+enum SM_STATES2 {SM2_INCREMENT, SM2_DECREMENT, SM2_ZERO} SM_STATE2; //buttons
+volatile unsigned char TimerFlag = 0; // TimerISR() sets this to 1. C programmer should clear to 0.
+unsigned long _avr_timer_M = 1; // Start count from here, down to 0. Default 1 ms.
+unsigned long _avr_timer_cntcurr = 0; // Current internal count of 1ms ticks
+unsigned short lightup = 0;
+unsigned short lightup1 = 0;
+unsigned char button1 = 0x00;
+unsigned char button2 = 0x00;
+unsigned char button3 = 0x00;
+unsigned char button4 = 0x00;
+unsigned short cnt = 0;
+unsigned short cnt1 = 0;
 void TimerOn() {
 		// AVR timer/counter controller register TCCR1
 		TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
