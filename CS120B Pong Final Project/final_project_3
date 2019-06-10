@@ -15,6 +15,7 @@ unsigned char button3 = 0x00;
 unsigned char button4 = 0x00;
 unsigned short cnt = 0;
 unsigned short cnt1 = 0;
+
 void TimerOn() {
 		// AVR timer/counter controller register TCCR1
 		TCCR1B = 0x0B;// bit3 = 0: CTC mode (clear timer on compare)
