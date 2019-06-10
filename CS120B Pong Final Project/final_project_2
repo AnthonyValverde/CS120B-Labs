@@ -52,9 +52,6 @@ void TimerOn() {
 			_avr_timer_cntcurr = _avr_timer_M;
 		}
 	}
-	
-
-	
 
 	// Set TimerISR() to tick every M ms
 	void TimerSet(unsigned long M) {
